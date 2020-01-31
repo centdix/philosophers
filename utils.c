@@ -62,6 +62,7 @@ t_philosopher	*init_ph(t_param param)
 		philosophers[i].is_sleeping = 0;
 		philosophers[i].is_dead = 0;
 		philosophers[i].eat_times = 0;
+		philosophers[i].last_eat = param.start_time;
 		i++;
 	}
 	return (philosophers);
