@@ -18,18 +18,27 @@ void	*routine(void *arg)
 		{
 			philosopher->is_eating = 1;
 			nb_forks -= 2;
-			last_eat = timestamp;
 			philosopher->eat_times++;
+		}
+		else
+		{
+			while (1)
+			{
+				if (nb)
+			}
 		}
 		pthread_mutex_unlock(&mutex);
 		gettimeofday(&cur_time, NULL);
 		timestamp = get_timediff(philosopher->param.start_time, cur_time);
-		if (philosopher->is_eating)
-			printf("ts: %ld / nb_%d is eating\n", timestamp, philosopher->id);
-		else
+		if (timestamp > philosopher->param.time_to_die)
 		{
 			printf("ts: %ld / nb_%d is dead\n", timestamp, philosopher->id);
 			pthread_exit(NULL);
+		}
+		if (philosopher->is_eating)
+		{
+			last_eat = timestamp;
+			printf("ts: %ld / nb_%d is eating\n", timestamp, philosopher->id);
 		}
 		usleep(philosopher->param.time_to_eat);
 		pthread_mutex_lock(&mutex);
