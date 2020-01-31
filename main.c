@@ -1,59 +1,48 @@
 #include "header.h"
 
-int 				nb_forks;
-pthread_mutex_t		mutex;
+void	routine_default(t_philosopher *philosopher)
+{
+	long			last_eat;
+	struct timeval	cur_time;
+	
+	while (!philosopher->is_dead)
+	{
+		pthread_mutex_lock(&g_mutex);
+		if (g_nb_forks >= 2)
+			ft_eat(philosopher);
+		pthread_mutex_unlock(&g_mutex);
+		if (!philosopher->is_eating)
+			while (!philosopher->is_dead && !philosopher->is_eating)
+				keep_trying(philosopher);
+		ft_sleep(philosopher);
+		ft_think(philosopher);
+	}
+}
 
 void	*routine(void *arg)
 {
 	t_philosopher 	*philosopher;
-	long 			timestamp;
 	long			last_eat;
 	struct timeval	cur_time;
 
 	philosopher = (t_philosopher *)arg;
-	while (philosopher->eat_times < philosopher->param.eat_times)
+	if (philosopher->param.eat_times > 0)
 	{
-		pthread_mutex_lock(&mutex);
-		if (nb_forks >= 2)
+		while (philosopher->eat_times < philosopher->param.eat_times)
 		{
-			philosopher->is_eating = 1;
-			nb_forks -= 2;
-			philosopher->eat_times++;
+			pthread_mutex_lock(&g_mutex);
+			if (g_nb_forks >= 2)
+				ft_eat(philosopher);
+			pthread_mutex_unlock(&g_mutex);
+			if (!philosopher->is_eating)
+				while (!philosopher->is_dead && !philosopher->is_eating)
+					keep_trying(philosopher);
+			ft_sleep(philosopher);
+			ft_think(philosopher);
 		}
-		else
-		{
-			while (1)
-			{
-				if (nb)
-			}
-		}
-		pthread_mutex_unlock(&mutex);
-		gettimeofday(&cur_time, NULL);
-		timestamp = get_timediff(philosopher->param.start_time, cur_time);
-		if (timestamp > philosopher->param.time_to_die)
-		{
-			printf("ts: %ld / nb_%d is dead\n", timestamp, philosopher->id);
-			pthread_exit(NULL);
-		}
-		if (philosopher->is_eating)
-		{
-			last_eat = timestamp;
-			printf("ts: %ld / nb_%d is eating\n", timestamp, philosopher->id);
-		}
-		usleep(philosopher->param.time_to_eat);
-		pthread_mutex_lock(&mutex);
-		nb_forks += 2;
-		pthread_mutex_unlock(&mutex);
-		gettimeofday(&cur_time, NULL);
-		timestamp = get_timediff(philosopher->param.start_time, cur_time);
-		philosopher->is_sleeping = 1;
-		printf("ts: %ld / nb_%d is sleeping\n", timestamp, philosopher->id);
-		usleep(philosopher->param.time_to_sleep);
-		gettimeofday(&cur_time, NULL);
-		timestamp = get_timediff(philosopher->param.start_time, cur_time);
-		philosopher->is_thinking = 1;
-		printf("ts: %ld / nb_%d is thinking\n", timestamp, philosopher->id);
 	}
+	else
+		routine_default(philosopher);
 	pthread_exit(NULL);
 }
 
@@ -96,9 +85,9 @@ int 	main(int ac, char **av)
 	param.nb_philosophers = ft_atoi(av[1]);
 	if (param.nb_philosophers < 1)
 		return (write_err("error: argument\n"));		
-	nb_forks = param.nb_philosophers - 1;
-	param.time_to_eat = ft_atoi(av[2]);
-	param.time_to_die = ft_atoi(av[3]);
+	g_nb_forks = param.nb_philosophers - 1;
+	param.time_to_die = ft_atoi(av[2]);
+	param.time_to_eat = ft_atoi(av[3]);
 	param.time_to_sleep = ft_atoi(av[4]);
 	if (ac == 5)
 		param.eat_times = -1;
