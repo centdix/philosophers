@@ -34,7 +34,11 @@ int 			write_err(char *str);
 int 			ft_atoi(char *str);
 t_philosopher	*init_ph(t_param param);
 long			get_timediff(struct timeval start, struct timeval now);
+
 void			ft_eat(t_philosopher *philosopher);
 void			ft_sleep(t_philosopher *philosopher);
 void			ft_think(t_philosopher *philosopher);
 void			keep_trying(t_philosopher *philosopher);
+
+void    		wait_eat(int count, t_philosopher *philosophers);
+void			wait_die(int count, t_philosopher *philosophers);

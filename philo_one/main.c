@@ -2,9 +2,6 @@
 
 void	routine_default(t_philosopher *philosopher)
 {
-	long			last_eat;
-	struct timeval	cur_time;
-	
 	while (!philosopher->is_dead)
 	{
 		pthread_mutex_lock(&g_mutex);
@@ -22,8 +19,6 @@ void	routine_default(t_philosopher *philosopher)
 void	*routine(void *arg)
 {
 	t_philosopher 	*philosopher;
-	long			last_eat;
-	struct timeval	cur_time;
 
 	philosopher = (t_philosopher *)arg;
 	if (philosopher->param.eat_times > 0)
@@ -50,7 +45,6 @@ int		start(t_param param)
 {
 	t_philosopher	*philosophers;
 	int				i;
-	int 			count;
 	int 			ret;
 
 	philosophers = init_ph(param);
@@ -63,15 +57,10 @@ int		start(t_param param)
 			break ;
 		i++;
 	}
-	count = i;
-	i = 0;
-	while (i < count)
-	{
-		ret = pthread_join(philosophers[i].thread, NULL);
-		if (ret)
-			break ;
-		i++;
-	}
+	if (param.eat_times > 0)
+		wait_eat(i, philosophers);
+	else
+		wait_die(i, philosophers);
 	free(philosophers);
 	return (ret);
 }
