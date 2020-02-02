@@ -49,6 +49,7 @@ int		start(t_param param)
 
 	philosophers = init_ph(param);
 	g_forks = init_forks(param);
+	pthread_mutex_init(&g_mutex, NULL);
 	ret = 0;
 	i = 0;
 	while (i < param.nb_philosophers)
@@ -65,6 +66,7 @@ int		start(t_param param)
 		wait_die(i, philosophers);
 	free(philosophers);
 	free(g_forks);
+	pthread_mutex_destroy(&g_mutex);
 	return (ret);
 }
 

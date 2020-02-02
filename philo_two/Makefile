@@ -4,12 +4,11 @@ SRCS = actions.c \
 		utils.c \
 		utils2.c \
 		start_utils.c \
-		forks_utils.c \
 		write_utils.c
 
 OBJS = $(addprefix $(DIR_O)/,$(SRCS:.c=.o))
 
-NAME = philo_one
+NAME = philo_two
 
 CC = gcc
 

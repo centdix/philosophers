@@ -4,10 +4,10 @@ void	routine_default(t_philosopher *philosopher)
 {
 	while (!philosopher->is_dead)
 	{
-		pthread_mutex_lock(&g_mutex);
-		if (check_forks(g_forks, philosopher))
+		sem_wait(g_semaphore);
+		if (g_nb_forks >= 2)
 			ft_eat(philosopher);
-		pthread_mutex_unlock(&g_mutex);
+		sem_post(g_semaphore);
 		if (!philosopher->is_eating)
 			while (!philosopher->is_dead && !philosopher->is_eating)
 				keep_trying(philosopher);
@@ -25,10 +25,10 @@ void	*routine(void *arg)
 	{
 		while (philosopher->eat_times < philosopher->param.eat_times)
 		{
-			pthread_mutex_lock(&g_mutex);
-			if (check_forks(g_forks, philosopher))
+			sem_wait(g_semaphore);
+			if (g_nb_forks >= 2)
 				ft_eat(philosopher);
-			pthread_mutex_unlock(&g_mutex);
+			sem_post(g_semaphore);
 			if (!philosopher->is_eating)
 				while (!philosopher->is_dead && !philosopher->is_eating)
 					keep_trying(philosopher);
@@ -48,7 +48,8 @@ int		start(t_param param)
 	int				ret;
 
 	philosophers = init_ph(param);
-	g_forks = init_forks(param);
+	g_nb_forks = param.nb_philosophers;
+	g_semaphore = sem_open("mysem", O_CREAT, O_RDWR, 1);
 	ret = 0;
 	i = 0;
 	while (i < param.nb_philosophers)
@@ -64,7 +65,8 @@ int		start(t_param param)
 	else
 		wait_die(i, philosophers);
 	free(philosophers);
-	free(g_forks);
+	sem_close(g_semaphore);
+	sem_unlink("mysem");
 	return (ret);
 }
 

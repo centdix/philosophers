@@ -16,12 +16,12 @@ void	ft_eat(t_philosopher *philosopher)
 		pthread_exit(NULL);
 	}
 	philosopher->is_eating = 1;
-	take_drop_forks(g_forks, philosopher, TAKE);
+	g_nb_forks -= 2;
 	philosopher->last_eat = cur_time;
 	philosopher->eat_times++;
 	write_status(timestamp, philosopher->id, EAT);
 	usleep(philosopher->param.time_to_eat * 1000);
-	take_drop_forks(g_forks, philosopher, DROP);
+	g_nb_forks += 2;
 }
 
 void	ft_sleep(t_philosopher *philosopher)
@@ -72,10 +72,10 @@ void	keep_trying(t_philosopher *philosopher)
 	long			time_since_eat;
 	long			timestamp;
 
-	pthread_mutex_lock(&g_mutex);
-	if (check_forks(g_forks, philosopher))
+	sem_wait(g_semaphore);
+	if (g_nb_forks >= 2)
 		ft_eat(philosopher);
-	pthread_mutex_unlock(&g_mutex);
+	sem_post(g_semaphore);
 	gettimeofday(&cur_time, NULL);
 	time_since_eat = get_timediff(philosopher->last_eat, cur_time);
 	timestamp = get_timediff(philosopher->param.start_time, cur_time);
