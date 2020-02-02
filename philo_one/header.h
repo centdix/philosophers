@@ -4,7 +4,14 @@
 #include <stdio.h>
 #include <unistd.h>
 
-int 				g_nb_forks;
+#define TAKE 0
+#define DROP 1
+#define EAT 2
+#define SLEEP 3
+#define THINK 4
+#define DIE 5
+
+int 				*g_forks;
 pthread_mutex_t		g_mutex;
 
 typedef struct	s_param
@@ -34,6 +41,11 @@ int 			write_err(char *str);
 int 			ft_atoi(char *str);
 t_philosopher	*init_ph(t_param param);
 long			get_timediff(struct timeval start, struct timeval now);
+void			write_status(long timestamp, int id, int action);
+
+int    			*init_forks(t_param param);
+int     		check_forks(int *forks, t_philosopher *philosopher);
+void    		take_drop_forks(int *forks, t_philosopher *philosopher, int action);
 
 void			ft_eat(t_philosopher *philosopher);
 void			ft_sleep(t_philosopher *philosopher);

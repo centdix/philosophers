@@ -5,7 +5,7 @@ void	routine_default(t_philosopher *philosopher)
 	while (!philosopher->is_dead)
 	{
 		pthread_mutex_lock(&g_mutex);
-		if (g_nb_forks >= 2)
+		if (check_forks(g_forks, philosopher))
 			ft_eat(philosopher);
 		pthread_mutex_unlock(&g_mutex);
 		if (!philosopher->is_eating)
@@ -26,7 +26,7 @@ void	*routine(void *arg)
 		while (philosopher->eat_times < philosopher->param.eat_times)
 		{
 			pthread_mutex_lock(&g_mutex);
-			if (g_nb_forks >= 2)
+			if (check_forks(g_forks, philosopher))
 				ft_eat(philosopher);
 			pthread_mutex_unlock(&g_mutex);
 			if (!philosopher->is_eating)
@@ -48,6 +48,7 @@ int		start(t_param param)
 	int 			ret;
 
 	philosophers = init_ph(param);
+	g_forks = init_forks(param);
 	ret = 0;
 	i = 0;
 	while (i < param.nb_philosophers)
@@ -62,6 +63,7 @@ int		start(t_param param)
 	else
 		wait_die(i, philosophers);
 	free(philosophers);
+	free(g_forks);
 	return (ret);
 }
 
@@ -74,7 +76,6 @@ int 	main(int ac, char **av)
 	param.nb_philosophers = ft_atoi(av[1]);
 	if (param.nb_philosophers < 1)
 		return (write_err("error: argument\n"));		
-	g_nb_forks = param.nb_philosophers - 1;
 	param.time_to_die = ft_atoi(av[2]);
 	param.time_to_eat = ft_atoi(av[3]);
 	param.time_to_sleep = ft_atoi(av[4]);

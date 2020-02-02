@@ -2,7 +2,9 @@ DIR_O = objs
 
 SRCS = actions.c \
 		utils.c \
-		start_utils.c
+		start_utils.c \
+		forks_utils.c \
+		write_utils.c
 
 OBJS = $(addprefix $(DIR_O)/,$(SRCS:.c=.o))
 
