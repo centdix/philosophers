@@ -13,7 +13,7 @@ void	ft_eat(t_philosopher *philosopher)
 	{
 		write_status(timestamp, philosopher->id, DIE);
 		philosopher->is_dead = 1;
-		pthread_exit(NULL);
+		exit(0);
 	}
 	philosopher->is_eating = 1;
 	g_nb_forks -= 2;
@@ -37,7 +37,7 @@ void	ft_sleep(t_philosopher *philosopher)
 	{
 		write_status(timestamp, philosopher->id, DIE);
 		philosopher->is_dead = 1;
-		pthread_exit(NULL);
+		exit(0);
 	}
 	philosopher->is_sleeping = 1;
 	philosopher->is_eating = 0;
@@ -58,7 +58,7 @@ void	ft_think(t_philosopher *philosopher)
 	{
 		write_status(timestamp, philosopher->id, DIE);
 		philosopher->is_dead = 1;
-		pthread_exit(NULL);
+		exit(0);
 	}
 	philosopher->is_thinking = 1;
 	philosopher->is_sleeping = 0;
@@ -83,7 +83,7 @@ void	keep_trying(t_philosopher *philosopher)
 	{
 		write_status(timestamp, philosopher->id, DIE);
 		philosopher->is_dead = 1;
-		pthread_exit(NULL);
+		exit(0);
 	} 
 	usleep(500);
 }
