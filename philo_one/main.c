@@ -13,6 +13,8 @@ void	routine_default(t_philosopher *philosopher)
 				keep_trying(philosopher);
 		ft_sleep(philosopher);
 		ft_think(philosopher);
+		if (philosopher->is_dead)
+			return ; 
 	}
 }
 
@@ -34,11 +36,13 @@ void	*routine(void *arg)
 					keep_trying(philosopher);
 			ft_sleep(philosopher);
 			ft_think(philosopher);
+			if (philosopher->is_dead)
+				return (NULL);
 		}
 	}
 	else
 		routine_default(philosopher);
-	pthread_exit(NULL);
+	return (NULL);
 }
 
 int		start(t_param param)

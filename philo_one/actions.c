@@ -11,9 +11,10 @@ void	ft_eat(t_philosopher *philosopher)
 	timestamp = get_timediff(philosopher->param.start_time, cur_time);
 	if (time_since_eat > philosopher->param.time_to_die)
 	{
-		write_status(timestamp, philosopher->id, DIE);
+		if (!philosopher->is_dead)
+			write_status(timestamp, philosopher->id, DIE);
 		philosopher->is_dead = 1;
-		pthread_exit(NULL);
+		return ;
 	}
 	philosopher->is_eating = 1;
 	take_drop_forks(g_forks, philosopher, TAKE);
@@ -35,9 +36,10 @@ void	ft_sleep(t_philosopher *philosopher)
 	timestamp = get_timediff(philosopher->param.start_time, cur_time);
 	if (time_since_eat > philosopher->param.time_to_die)
 	{
-		write_status(timestamp, philosopher->id, DIE);
+		if (!philosopher->is_dead)
+			write_status(timestamp, philosopher->id, DIE);
 		philosopher->is_dead = 1;
-		pthread_exit(NULL);
+		return ;
 	}
 	philosopher->is_sleeping = 1;
 	philosopher->is_eating = 0;
@@ -56,9 +58,10 @@ void	ft_think(t_philosopher *philosopher)
 	timestamp = get_timediff(philosopher->param.start_time, cur_time);
 	if (time_since_eat > philosopher->param.time_to_die)
 	{
-		write_status(timestamp, philosopher->id, DIE);
+		if (!philosopher->is_dead)
+			write_status(timestamp, philosopher->id, DIE);
 		philosopher->is_dead = 1;
-		pthread_exit(NULL);
+		return ;
 	}
 	philosopher->is_thinking = 1;
 	philosopher->is_sleeping = 0;
@@ -81,9 +84,10 @@ void	keep_trying(t_philosopher *philosopher)
 	timestamp = get_timediff(philosopher->param.start_time, cur_time);
 	if (time_since_eat > philosopher->param.time_to_die)
 	{
-		write_status(timestamp, philosopher->id, DIE);
+		if (!philosopher->is_dead)
+			write_status(timestamp, philosopher->id, DIE);
 		philosopher->is_dead = 1;
-		pthread_exit(NULL);
+		return ;
 	} 
 	usleep(500);
 }
