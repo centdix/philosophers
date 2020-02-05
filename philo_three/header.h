@@ -6,6 +6,7 @@
 #include <fcntl.h>
 #include <semaphore.h>
 #include <sys/wait.h>
+#include <signal.h>
 
 #define TAKE 0
 #define DROP 1
