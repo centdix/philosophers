@@ -1,13 +1,25 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   utils2.c                                           :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: fgoulama <marvin@42.fr>                    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2020/02/05 18:39:53 by fgoulama          #+#    #+#             */
+/*   Updated: 2020/02/05 19:08:33 by fgoulama         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "header.h"
 
-int         	ft_strlen(char *str)
+int				ft_strlen(char *str)
 {
-    int i;
+	int i;
 
-    i = 0;
-    while (str[i])
-        i++;
-    return (i);
+	i = 0;
+	while (str[i])
+		i++;
+	return (i);
 }
 
 static int		find_len(int n)
@@ -60,7 +72,7 @@ char			*ft_itoa(int n)
 
 char			*ft_strjoin(char *str1, char *str2)
 {
-	int 	len1;
+	int		len1;
 	int		len2;
 	char	*result;
 	int		i;

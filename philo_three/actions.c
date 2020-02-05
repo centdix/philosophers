@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   actions.c                                          :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: fgoulama <marvin@42.fr>                    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2020/02/05 18:38:49 by fgoulama          #+#    #+#             */
+/*   Updated: 2020/02/05 19:03:47 by fgoulama         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "header.h"
 
 void	ft_eat(t_philosopher *philosopher)
@@ -84,6 +96,6 @@ void	keep_trying(t_philosopher *philosopher)
 		write_status(timestamp, philosopher->id, DIE);
 		philosopher->is_dead = 1;
 		exit(0);
-	} 
+	}
 	usleep(500);
 }

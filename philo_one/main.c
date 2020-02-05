@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   main.c                                             :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: fgoulama <marvin@42.fr>                    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2020/02/05 18:38:07 by fgoulama          #+#    #+#             */
+/*   Updated: 2020/02/05 18:38:08 by fgoulama         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "header.h"
 
 void	routine_default(t_philosopher *philosopher)
@@ -14,7 +26,7 @@ void	routine_default(t_philosopher *philosopher)
 		ft_sleep(philosopher);
 		ft_think(philosopher);
 		if (philosopher->is_dead)
-			return ; 
+			return ;
 	}
 }
 
