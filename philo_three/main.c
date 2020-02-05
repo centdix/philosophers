@@ -16,7 +16,7 @@ void	routine_default(t_philosopher *philosopher)
 	}
 }
 
-void	*routine(void *arg)
+void	routine(void *arg)
 {
 	t_philosopher	*philosopher;
 
@@ -38,7 +38,7 @@ void	*routine(void *arg)
 	}
 	else
 		routine_default(philosopher);
-	pthread_exit(NULL);
+	exit(0);
 }
 
 int		start(t_param param)
@@ -54,11 +54,8 @@ int		start(t_param param)
 	i = 0;
 	while (i < param.nb_philosophers)
 	{
-		if (fork())
-		{
-			routine(philosophers[i]);
-			exit(0);
-		}
+		if (!(philosophers[i].pid = fork()))
+			routine(&philosophers[i]);
 		i++;
 	}
 	if (param.eat_times > 0)

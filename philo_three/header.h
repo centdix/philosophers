@@ -5,6 +5,7 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include <semaphore.h>
+#include <signal.h>
 
 #define TAKE 0
 #define DROP 1
@@ -29,7 +30,7 @@ typedef struct	s_param
 typedef struct 	s_philosopher
 {
 	int				id;
-	pthread_t		thread;
+	pid_t			pid;
 	t_param			param;
 	int				is_eating;
 	int				is_sleeping;
