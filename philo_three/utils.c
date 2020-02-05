@@ -1,6 +1,18 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   utils.c                                            :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: fgoulama <marvin@42.fr>                    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2020/02/05 18:39:46 by fgoulama          #+#    #+#             */
+/*   Updated: 2020/02/05 19:07:15 by fgoulama         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "header.h"
 
-int 			ft_isdigit(char c)
+int				ft_isdigit(char c)
 {
 	if (c >= '0' && c <= '9')
 		return (1);
@@ -32,8 +44,8 @@ int				ft_atoi(char *str)
 
 t_philosopher	*init_ph(t_param param)
 {
-	t_philosopher 	*philosophers;
-	int 			i;
+	t_philosopher	*philosophers;
+	int				i;
 
 	if (!(philosophers = malloc(sizeof(t_philosopher) * param.nb_philosophers)))
 		return (NULL);
@@ -55,7 +67,7 @@ t_philosopher	*init_ph(t_param param)
 long			get_timediff(struct timeval start, struct timeval now)
 {
 	long	result;
-	int 	micro;
+	int		micro;
 
 	result = now.tv_sec - start.tv_sec;
 	result *= 1000;
