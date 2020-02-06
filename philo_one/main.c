@@ -14,42 +14,45 @@
 
 void	routine_default(t_philosopher *philosopher)
 {
+	long	timestamp;
+
 	while (!philosopher->is_dead)
 	{
-		pthread_mutex_lock(&g_mutex);
-		if (check_forks(g_forks, philosopher))
-			ft_eat(philosopher);
-		pthread_mutex_unlock(&g_mutex);
+		ft_eat(philosopher, &timestamp);
 		if (!philosopher->is_eating)
 			while (!philosopher->is_dead && !philosopher->is_eating)
-				keep_trying(philosopher);
-		ft_sleep(philosopher);
-		ft_think(philosopher);
+				keep_trying(philosopher, &timestamp);
+		ft_sleep(philosopher, &timestamp);
+		ft_think(philosopher, &timestamp);
 		if (philosopher->is_dead)
+		{
+			write_status(timestamp, philosopher->id, DIE);
 			return ;
+		}
 	}
 }
 
 void	*routine(void *arg)
 {
 	t_philosopher	*philosopher;
+	long			timestamp;
 
 	philosopher = (t_philosopher *)arg;
 	if (philosopher->param.eat_times > 0)
 	{
 		while (philosopher->eat_times < philosopher->param.eat_times)
 		{
-			pthread_mutex_lock(&g_mutex);
-			if (check_forks(g_forks, philosopher))
-				ft_eat(philosopher);
-			pthread_mutex_unlock(&g_mutex);
+			ft_eat(philosopher, &timestamp);
 			if (!philosopher->is_eating)
 				while (!philosopher->is_dead && !philosopher->is_eating)
-					keep_trying(philosopher);
-			ft_sleep(philosopher);
-			ft_think(philosopher);
+					keep_trying(philosopher, &timestamp);
+			ft_sleep(philosopher, &timestamp);
+			ft_think(philosopher, &timestamp);
 			if (philosopher->is_dead)
+			{
+				write_status(timestamp, philosopher->id, DIE);
 				return (NULL);
+			}
 		}
 	}
 	else

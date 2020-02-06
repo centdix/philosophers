@@ -19,7 +19,7 @@ int		*init_forks(t_param param)
 	int		*forks;
 
 	i = 0;
-	count = param.nb_philosophers - 1;
+	count = param.nb_philosophers;
 	if (!(forks = malloc(sizeof(int) * count)))
 		return (NULL);
 	while (i < count)
@@ -32,39 +32,39 @@ int		*init_forks(t_param param)
 
 int		check_forks(int *forks, t_philosopher *philosopher)
 {
-	int		ph_index;
-	int		next;
-	int		prev;
+	int		index;
+	int		right;
+	int		left;
 	int		forks_count;
 
-	ph_index = philosopher->id - 1;
-	forks_count = philosopher->param.nb_philosophers - 1;
-	prev = (ph_index == 0) ? forks_count - 1 : ph_index - 1;
-	next = (ph_index == forks_count) ? 0 : ph_index + 1;
-	if (forks[prev] && forks[next])
+	index = philosopher->id - 1;
+	forks_count = philosopher->param.nb_philosophers;
+	left = index;
+	right = (index == forks_count - 1) ? 0 : index + 1;
+	if (forks[left] && forks[right])
 		return (1);
 	return (0);
 }
 
-void	take_drop_forks(int *forks, t_philosopher *philosopher, int action)
+void	take_drop_forks(int **forks, t_philosopher *philosopher, int action)
 {
-	int		next;
-	int		prev;
-	int		ph_index;
+	int		right;
+	int		left;
+	int		index;
 	int		forks_count;
 
-	ph_index = philosopher->id - 1;
-	forks_count = philosopher->param.nb_philosophers - 1;
-	prev = (ph_index == 0) ? forks_count - 1 : ph_index - 1;
-	next = (ph_index == forks_count - 1) ? 0 : ph_index + 1;
+	index = philosopher->id - 1;
+	forks_count = philosopher->param.nb_philosophers;
+	left = index;
+	right = (index == forks_count - 1) ? 0 : index + 1;
 	if (action == TAKE)
 	{
-		forks[prev] = 0;
-		forks[next] = 0;
+		(*forks)[left] = 0;
+		(*forks)[right] = 0;
 	}
 	if (action == DROP)
 	{
-		forks[prev] = 1;
-		forks[next] = 1;
+		(*forks)[left] = 1;
+		(*forks)[right] = 1;
 	}
 }

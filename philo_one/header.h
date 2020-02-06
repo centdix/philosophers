@@ -65,13 +65,13 @@ void			write_status(long timestamp, int id, int action);
 
 int				*init_forks(t_param param);
 int				check_forks(int *forks, t_philosopher *philosopher);
-void			take_drop_forks(int *forks, t_philosopher *philosopher,
+void			take_drop_forks(int **forks, t_philosopher *philosopher,
 				int action);
 
-void			ft_eat(t_philosopher *philosopher);
-void			ft_sleep(t_philosopher *philosopher);
-void			ft_think(t_philosopher *philosopher);
-void			keep_trying(t_philosopher *philosopher);
+void			ft_eat(t_philosopher *philosopher, long *timestamp);
+void			ft_sleep(t_philosopher *philosopher, long *timestamp);
+void			ft_think(t_philosopher *philosopher, long *timestamp);
+void			keep_trying(t_philosopher *philosopher, long *timestamp);
 
 void			wait_eat(int count, t_philosopher *philosophers);
 void			wait_die(int count, t_philosopher *philosophers);
