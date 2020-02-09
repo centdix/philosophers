@@ -1,70 +1,41 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   forks_utils.c                                      :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: fgoulama <marvin@42.fr>                    +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2020/02/05 18:37:08 by fgoulama          #+#    #+#             */
-/*   Updated: 2020/02/05 18:53:14 by fgoulama         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
 #include "header.h"
 
-int		*init_forks(t_param param)
+void    take_forks(t_philosopher *philosopher)
 {
-	int		i;
-	int		count;
-	int		*forks;
+    int     index;
+    int     right;
+    int     left;
 
-	i = 0;
-	count = param.nb_philosophers;
-	if (!(forks = malloc(sizeof(int) * count)))
-		return (NULL);
-	while (i < count)
-	{
-		forks[i] = 1;
-		i++;
-	}
-	return (forks);
+    index = philosopher->id - 1;
+    left = index;
+    right = (index + 1) % philosopher->param.nb_philosophers;
+    pthread_mutex_lock(&g_mutex[ft_min(left, right)]);
+    if (g_forks[ft_min(left, right)] == 1)
+    {
+        g_forks[ft_min(left, right)] = 0;
+        philosopher->has_left = 1;
+    }
+    pthread_mutex_lock(&g_mutex[ft_max(left, right)]);
+    if (g_forks[ft_max(left, right)] == 1)
+    {
+        g_forks[ft_max(left, right)] = 0;
+        philosopher->has_right = 1;
+    }
 }
 
-int		check_forks(int *forks, t_philosopher *philosopher)
+void    drop_forks(t_philosopher *philosopher)
 {
-	int		index;
-	int		right;
-	int		left;
-	int		forks_count;
+    int     index;
+    int     right;
+    int     left;
 
-	index = philosopher->id - 1;
-	forks_count = philosopher->param.nb_philosophers;
-	left = index;
-	right = (index == forks_count - 1) ? 0 : index + 1;
-	if (forks[left] && forks[right])
-		return (1);
-	return (0);
-}
-
-void	take_drop_forks(int **forks, t_philosopher *philosopher, int action)
-{
-	int		right;
-	int		left;
-	int		index;
-	int		forks_count;
-
-	index = philosopher->id - 1;
-	forks_count = philosopher->param.nb_philosophers;
-	left = index;
-	right = (index == forks_count - 1) ? 0 : index + 1;
-	if (action == TAKE)
-	{
-		(*forks)[left] = 0;
-		(*forks)[right] = 0;
-	}
-	if (action == DROP)
-	{
-		(*forks)[left] = 1;
-		(*forks)[right] = 1;
-	}
+    index = philosopher->id - 1;
+    left = index;
+    right = (index + 1) % philosopher->param.nb_philosophers;
+    g_forks[left] = 1;
+    philosopher->has_left = 0;
+    pthread_mutex_unlock(&g_mutex[left]);
+    g_forks[right] = 1;
+    philosopher->has_right = 0;
+    pthread_mutex_unlock(&g_mutex[right]);
 }

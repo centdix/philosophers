@@ -25,55 +25,61 @@
 # define SLEEP 3
 # define THINK 4
 # define DIE 5
+# define EATING 6
+# define SLEEPING 7
+# define THINKING 8
+# define DEAD 9
 
-int					*g_forks;
-pthread_mutex_t		g_mutex;
+int                 *g_forks;
+pthread_mutex_t     *g_mutex;
 
-typedef struct	s_param
+typedef struct  s_param
 {
-	int				nb_philosophers;
-	int				time_to_eat;
-	int				time_to_die;
-	int				time_to_sleep;
-	int				eat_times;
-	struct timeval	start_time;
-}				t_param;
+    int             nb_philosophers;
+    int             time_to_eat;
+    int             time_to_die;
+    int             time_to_sleep;
+    int             eat_times;
+    struct timeval  start_time;
+}               t_param;
 
-typedef struct	s_philosopher
+typedef struct  s_philosopher
 {
-	int				id;
-	pthread_t		thread;
-	t_param			param;
-	int				is_eating;
-	int				is_sleeping;
-	int				is_thinking;
-	int				is_dead;
-	int				eat_times;
-	struct timeval	last_eat;
-}				t_philosopher;
+    int             id;
+    pthread_t       thread;
+    t_param         param;
+    int             status;
+    int             has_left;
+    int             has_right;
+    int             eat_times;
+    struct timeval  last_eat;
+}               t_philosopher;
 
-int				ft_strlen(char *str);
-int				ft_atoi(char *str);
-char			*ft_strdup(char *str);
-char			*ft_strjoin(char *str1, char *str2);
-char			*ft_itoa(int n);
-t_philosopher	*init_ph(t_param param);
-long			get_timediff(struct timeval start, struct timeval now);
+int             ft_atoi(char *str);
+int             ft_min(int a, int b);
+int             ft_max(int a, int b);
+long            get_timediff(struct timeval start);
 
-int				write_err(char *str);
-void			write_status(long timestamp, int id, int action);
+int             ft_strlen(char *str);
+char            *ft_strdup(char *str);
+char            *ft_strjoin(char *str1, char *str2);
+char            *ft_itoa(int n);
 
-int				*init_forks(t_param param);
-int				check_forks(int *forks, t_philosopher *philosopher);
-void			take_drop_forks(int **forks, t_philosopher *philosopher,
-				int action);
+int             init_philosophers(t_philosopher **philosophers, t_param param);
+int             init_mutex(pthread_mutex_t **g_mutex, int count);
+int             init_forks(int **g_forks, int count);
 
-void			ft_eat(t_philosopher *philosopher, long *timestamp);
-void			ft_sleep(t_philosopher *philosopher, long *timestamp);
-void			ft_think(t_philosopher *philosopher, long *timestamp);
-void			keep_trying(t_philosopher *philosopher, long *timestamp);
+int             write_err(char *str);
+void            write_status(long timestamp, int id, int action);
 
-void			wait_eat(int count, t_philosopher *philosophers);
-void			wait_die(int count, t_philosopher *philosophers);
+void            take_forks(t_philosopher *philosopher);
+void            drop_forks(t_philosopher *philosopher);
+
+void            ft_eat(t_philosopher *philosopher);
+void            ft_sleep(t_philosopher *philosopher);
+void            ft_think(t_philosopher *philosopher);
+
+void            wait_eat(t_philosopher *philosophers, int count);
+void            wait_die(t_philosopher *philosophers, int count);
 
 #endif
