@@ -19,6 +19,7 @@
 # include <stdio.h>
 # include <unistd.h>
 # include <semaphore.h>
+# include <sys/errno.h>
 
 # define TAKE 0
 # define DROP 1
@@ -32,11 +33,11 @@
 # define DEAD 9
 
 int     g_nb_forks;
-sem_t   *g_semaphore;
 
 typedef struct  s_param
 {
     int             nb_philosophers;
+    sem_t           *sem;
     int             time_to_eat;
     int             time_to_die;
     int             time_to_sleep;

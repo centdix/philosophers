@@ -1,5 +1,19 @@
 #include "header.h"
 
+int     should_take(long time_since_eat, t_philosopher *philosopher)
+{
+    if (philosopher->eat_times == 0)
+        return (1);
+    else
+    {
+        if (time_since_eat > philosopher->param.time_to_eat
+        + philosopher->param.time_to_sleep + 5
+        || philosopher->param.time_to_die - time_since_eat < 5)
+            return (1);
+        return (0);
+    }
+}
+
 void    ft_eat(t_philosopher *philosopher)
 {
     long            timestamp;
@@ -13,7 +27,8 @@ void    ft_eat(t_philosopher *philosopher)
         write_status(timestamp, philosopher->id, DIE);
         return ;
     }
-    take_forks(philosopher);
+    if (should_take(time_since_eat, philosopher))
+        take_forks(philosopher);
     timestamp = get_timediff(philosopher->param.start_time);
     if (philosopher->nb_forks == 2)
     {

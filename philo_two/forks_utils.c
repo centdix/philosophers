@@ -2,19 +2,19 @@
 
 void    take_forks(t_philosopher *philosopher)
 {
-    sem_wait(g_semaphore);
-    if (g_nb_forks >= 2 && philosopher->nb_forks == 0)
+    sem_wait(philosopher->param.sem);
+    if (g_nb_forks >= 2)
     {
         g_nb_forks -= 2;
         philosopher->nb_forks += 2;
     }
-    sem_post(g_semaphore);
+    else
+        sem_post(philosopher->param.sem);
 }
 
 void    drop_forks(t_philosopher *philosopher)
 {
-    sem_wait(g_semaphore);
     g_nb_forks += 2;
     philosopher->nb_forks -= 2;
-    sem_post(g_semaphore);
+    sem_post(philosopher->param.sem);
 }

@@ -22,7 +22,7 @@ void    *routine(void *arg)
     {
         while (philosopher->status != DEAD)
         {
-        	while (philosopher->status != DEAD && philosopher->status != EATING)
+            while (philosopher->status != DEAD && philosopher->status != EATING)
             	ft_eat(philosopher);
             if (philosopher->status != DEAD)
                 ft_sleep(philosopher);
@@ -42,7 +42,6 @@ int     start(t_param param)
 
     init_philosophers(&philosophers, param);
     g_nb_forks = param.nb_philosophers;
-	g_semaphore = sem_open("mysem", O_CREAT, 0666, g_nb_forks / 2);
     i = 0;
     while (i < param.nb_philosophers)
     {
@@ -53,7 +52,9 @@ int     start(t_param param)
         wait_die(philosophers, param.nb_philosophers);
     else
         wait_eat(philosophers, param.nb_philosophers);
-	sem_close(g_semaphore);
+    sem_post(param.sem);
+	sem_close(param.sem);
+    sem_unlink("forks");
     return (0);
 }
 
@@ -78,5 +79,7 @@ int     main(int ac, char **av)
             return (write_err("error: argument\n"));
     }
     gettimeofday(&param.start_time, NULL);
+    sem_unlink("forks");
+    param.sem = sem_open("forks", O_CREAT, 0666, param.nb_philosophers / 2);
     return (start(param));
 }
