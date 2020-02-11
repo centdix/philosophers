@@ -5,58 +5,49 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: fgoulama <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2020/02/05 18:39:36 by fgoulama          #+#    #+#             */
-/*   Updated: 2020/02/05 18:39:38 by fgoulama         ###   ########.fr       */
+/*   Created: 2020/02/11 21:55:26 by fgoulama          #+#    #+#             */
+/*   Updated: 2020/02/11 21:55:31 by fgoulama         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "header.h"
 
-void	routine_default(t_philosopher *philosopher)
+void	routine_with_option(t_philosopher *philosopher)
 {
-	long	timestamp;
-
-	while (!philosopher->is_dead)
+	while (philosopher->eat_times < philosopher->param.eat_times
+			&& philosopher->status != DEAD)
 	{
-		ft_eat(philosopher, &timestamp);
-		if (!philosopher->is_eating)
-			while (!philosopher->is_dead && !philosopher->is_eating)
-				keep_trying(philosopher, &timestamp);
-		ft_sleep(philosopher, &timestamp);
-		ft_think(philosopher, &timestamp);
-		if (philosopher->is_dead)
-		{
-			write_status(timestamp, philosopher->id, DIE);
-			return ;
-		}
+		while (philosopher->status != DEAD && philosopher->status != EATING)
+			ft_eat(philosopher);
+		if (philosopher->status != DEAD)
+			ft_sleep(philosopher);
+		if (philosopher->status != DEAD)
+			ft_think(philosopher);
 	}
+	if (philosopher->status == DEAD)
+		exit(1);
+	exit(0);
 }
 
 void	*routine(void *arg)
 {
-	t_philosopher	*philosopher;
-	long			timestamp;
+	t_philosopher *philosopher;
 
 	philosopher = (t_philosopher *)arg;
-	if (philosopher->param.eat_times > 0)
+	if (philosopher->param.eat_times == -1)
 	{
-		while (philosopher->eat_times < philosopher->param.eat_times)
+		while (philosopher->status != DEAD)
 		{
-			ft_eat(philosopher, &timestamp);
-			if (!philosopher->is_eating)
-				while (!philosopher->is_dead && !philosopher->is_eating)
-					keep_trying(philosopher, &timestamp);
-			ft_sleep(philosopher, &timestamp);
-			ft_think(philosopher, &timestamp);
-			if (philosopher->is_dead)
-			{
-				write_status(timestamp, philosopher->id, DIE);
-				return (NULL);
-			}
+			while (philosopher->status != DEAD && philosopher->status != EATING)
+				ft_eat(philosopher);
+			if (philosopher->status != DEAD)
+				ft_sleep(philosopher);
+			if (philosopher->status != DEAD)
+				ft_think(philosopher);
 		}
 	}
 	else
-		routine_default(philosopher);
+		routine_with_option(philosopher);
 	return (NULL);
 }
 
@@ -64,12 +55,9 @@ int		start(t_param param)
 {
 	t_philosopher	*philosophers;
 	int				i;
-	int				ret;
 
-	philosophers = init_ph(param);
+	init_philosophers(&philosophers, param);
 	g_nb_forks = param.nb_philosophers;
-	g_semaphore = sem_open("mysem", O_CREAT, O_RDWR, 1);
-	ret = 0;
 	i = 0;
 	while (i < param.nb_philosophers)
 	{
@@ -77,14 +65,15 @@ int		start(t_param param)
 			routine(&philosophers[i]);
 		i++;
 	}
-	if (param.eat_times > 0)
-		wait_eat(i, philosophers);
+	if (param.eat_times == -1)
+		wait_die(philosophers, param.nb_philosophers);
 	else
-		wait_die(i, philosophers);
+		wait_eat(philosophers, param.nb_philosophers);
+	sem_post(param.sem);
+	sem_close(param.sem);
+	sem_unlink("forks");
 	free(philosophers);
-	sem_close(g_semaphore);
-	sem_unlink("mysem");
-	return (ret);
+	return (0);
 }
 
 int		main(int ac, char **av)
@@ -107,7 +96,8 @@ int		main(int ac, char **av)
 		if (param.eat_times <= 0)
 			return (write_err("error: argument\n"));
 	}
-	if (gettimeofday(&param.start_time, NULL))
-		return (write_err("error: time\n"));
+	gettimeofday(&param.start_time, NULL);
+	sem_unlink("forks");
+	param.sem = sem_open("forks", O_CREAT, 0666, param.nb_philosophers / 2);
 	return (start(param));
 }

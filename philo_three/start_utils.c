@@ -5,26 +5,14 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: fgoulama <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2020/02/05 18:39:41 by fgoulama          #+#    #+#             */
-/*   Updated: 2020/02/05 19:06:44 by fgoulama         ###   ########.fr       */
+/*   Created: 2020/02/11 21:55:39 by fgoulama          #+#    #+#             */
+/*   Updated: 2020/02/11 21:55:43 by fgoulama         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "header.h"
 
-void	wait_eat(int count, t_philosopher *philosophers)
-{
-	int i;
-
-	i = 0;
-	while (i < count)
-	{
-		waitpid(philosophers[i].pid, NULL, 0);
-		i++;
-	}
-}
-
-void	kill_all(int count, t_philosopher *philosophers)
+void	kill_all(t_philosopher *philosophers, int count)
 {
 	int i;
 
@@ -36,7 +24,7 @@ void	kill_all(int count, t_philosopher *philosophers)
 	}
 }
 
-void	wait_die(int count, t_philosopher *philosophers)
+void	wait_die(t_philosopher *philosophers, int count)
 {
 	int i;
 	int ret;
@@ -49,10 +37,28 @@ void	wait_die(int count, t_philosopher *philosophers)
 			ret = waitpid(philosophers[i].pid, NULL, WNOHANG);
 			if (ret > 0)
 			{
-				kill_all(count, philosophers);
+				kill_all(philosophers, count);
 				return ;
 			}
 			i++;
 		}
+	}
+}
+
+void	wait_eat(t_philosopher *philosophers, int count)
+{
+	int i;
+	int status;
+
+	i = 0;
+	while (i < count)
+	{
+		waitpid(philosophers[i].pid, &status, 0);
+		if (status != 0)
+		{
+			kill_all(philosophers, count);
+			return ;
+		}
+		i++;
 	}
 }

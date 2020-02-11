@@ -1,43 +1,32 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   start_utils.c                                      :+:      :+:    :+:   */
+/*   forks_utils.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: fgoulama <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2020/02/11 21:41:33 by fgoulama          #+#    #+#             */
-/*   Updated: 2020/02/11 21:41:34 by fgoulama         ###   ########.fr       */
+/*   Created: 2020/02/11 21:54:36 by fgoulama          #+#    #+#             */
+/*   Updated: 2020/02/11 21:54:41 by fgoulama         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "header.h"
 
-void	wait_die(t_philosopher *philosophers, int count)
+void	take_forks(t_philosopher *philosopher)
 {
-	int		i;
-
-	while (1)
+	sem_wait(philosopher->param.sem);
+	if (g_nb_forks >= 2)
 	{
-		i = 0;
-		while (i < count)
-		{
-			if (philosophers[i].status == DEAD)
-				return ;
-			i++;
-		}
+		g_nb_forks -= 2;
+		philosopher->nb_forks += 2;
 	}
+	else
+		sem_post(philosopher->param.sem);
 }
 
-void	wait_eat(t_philosopher *philosophers, int count)
+void	drop_forks(t_philosopher *philosopher)
 {
-	int i;
-
-	i = 0;
-	while (i < count)
-	{
-		pthread_join(philosophers[i].thread, NULL);
-		if (philosophers[i].status == DEAD)
-			return ;
-		i++;
-	}
+	g_nb_forks += 2;
+	philosopher->nb_forks -= 2;
+	sem_post(philosopher->param.sem);
 }
