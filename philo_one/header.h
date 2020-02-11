@@ -32,6 +32,7 @@
 
 int					*g_forks;
 pthread_mutex_t		*g_mutex;
+pthread_mutex_t		g_write_mutex;
 
 typedef struct	s_param
 {
@@ -70,7 +71,8 @@ int				init_mutex(pthread_mutex_t **g_mutex, int count);
 int				init_forks(int **g_forks, int count);
 
 int				write_err(char *str);
-void			write_status(long timestamp, int id, int action);
+void			write_status(long timestamp, t_philosopher *philosopher,
+				int action);
 
 void			take_forks(t_philosopher *philosopher);
 void			drop_forks(t_philosopher *philosopher);

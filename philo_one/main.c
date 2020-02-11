@@ -57,6 +57,7 @@ int		start(t_param param)
 	init_philosophers(&philosophers, param);
 	init_mutex(&g_mutex, param.nb_philosophers);
 	init_forks(&g_forks, param.nb_philosophers);
+	pthread_mutex_init(&g_write_mutex, NULL);
 	i = 0;
 	while (i < param.nb_philosophers)
 	{
@@ -78,7 +79,7 @@ int		main(int ac, char **av)
 	if (ac < 5 || ac > 6)
 		return (write_err("error: argument\n"));
 	param.nb_philosophers = ft_atoi(av[1]);
-	if (param.nb_philosophers < 1)
+	if (param.nb_philosophers <= 1)
 		return (write_err("error: argument\n"));
 	param.time_to_die = ft_atoi(av[2]);
 	param.time_to_eat = ft_atoi(av[3]);

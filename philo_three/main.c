@@ -83,7 +83,7 @@ int		main(int ac, char **av)
 	if (ac < 5 || ac > 6)
 		return (write_err("error: argument\n"));
 	param.nb_philosophers = ft_atoi(av[1]);
-	if (param.nb_philosophers < 1)
+	if (param.nb_philosophers <= 1)
 		return (write_err("error: argument\n"));
 	param.time_to_die = ft_atoi(av[2]);
 	param.time_to_eat = ft_atoi(av[3]);

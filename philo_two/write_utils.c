@@ -26,6 +26,22 @@ void		free_all(char *ts, char *id, char *end, char *status)
 	free(end);
 }
 
+char		*get_end(int action)
+{
+	char	*end;
+
+	end = NULL;
+	if (action == EAT)
+		end = ft_strdup(" is eating\n");
+	else if (action == SLEEP)
+		end = ft_strdup(" is sleeping\n");
+	else if (action == THINK)
+		end = ft_strdup(" is thinking\n");
+	else if (action == DIE)
+		end = ft_strdup(" died\n");
+	return (end);
+}
+
 void		write_status(long timestamp, int id, int action)
 {
 	char	*status;
@@ -36,21 +52,15 @@ void		write_status(long timestamp, int id, int action)
 
 	ts_str = ft_itoa((int)timestamp);
 	id_str = ft_itoa(id);
-	end = NULL;
-	if (action == EAT)
-		end = ft_strdup(" is eating\n");
-	else if (action == SLEEP)
-		end = ft_strdup(" is sleeping\n");
-	else if (action == THINK)
-		end = ft_strdup(" is thinking\n");
-	else if (action == DIE)
-		end = ft_strdup(" died\n");
+	end = get_end(action);
 	tmp = ft_strjoin(ts_str, " ");
 	status = ft_strjoin(tmp, id_str);
 	free(tmp);
 	tmp = status;
 	status = ft_strjoin(tmp, end);
 	free(tmp);
+	sem_wait(g_write_sem);
 	write(1, status, ft_strlen(status));
+	sem_post(g_write_sem);
 	free_all(ts_str, id_str, end, status);
 }

@@ -56,6 +56,8 @@ int		start(t_param param)
 
 	init_philosophers(&philosophers, param);
 	g_nb_forks = param.nb_philosophers;
+	sem_unlink("write");
+	g_write_sem = sem_open("write", O_CREAT, 0666, 1);
 	i = 0;
 	while (i < param.nb_philosophers)
 	{
@@ -67,9 +69,8 @@ int		start(t_param param)
 		wait_die(philosophers, param.nb_philosophers);
 	else
 		wait_eat(philosophers, param.nb_philosophers);
-	sem_post(param.sem);
-	sem_close(param.sem);
 	sem_unlink("forks");
+	sem_unlink("write");
 	return (0);
 }
 
@@ -80,7 +81,7 @@ int		main(int ac, char **av)
 	if (ac < 5 || ac > 6)
 		return (write_err("error: argument\n"));
 	param.nb_philosophers = ft_atoi(av[1]);
-	if (param.nb_philosophers < 1)
+	if (param.nb_philosophers <= 1)
 		return (write_err("error: argument\n"));
 	param.time_to_die = ft_atoi(av[2]);
 	param.time_to_eat = ft_atoi(av[3]);

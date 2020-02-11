@@ -32,7 +32,8 @@
 # define THINKING 8
 # define DEAD 9
 
-int		g_nb_forks;
+int					g_nb_forks;
+sem_t				*g_write_sem;
 
 typedef struct	s_param
 {
