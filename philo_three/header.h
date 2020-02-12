@@ -39,6 +39,7 @@ typedef struct	s_param
 {
 	int				nb_philosophers;
 	sem_t			*sem;
+	sem_t			*write_sem;
 	int				time_to_eat;
 	int				time_to_die;
 	int				time_to_sleep;
@@ -68,7 +69,7 @@ char			*ft_itoa(int n);
 int				init_philosophers(t_philosopher **philosophers, t_param param);
 
 int				write_err(char *str);
-void			write_status(long timestamp, int id, int action);
+void			write_status(long timestamp, t_philosopher *philosopher, int action);
 
 void			take_forks(t_philosopher *philosopher);
 void			drop_forks(t_philosopher *philosopher);

@@ -22,7 +22,7 @@ void	ft_eat(t_philosopher *philosopher)
 	if (time_since_eat > philosopher->param.time_to_die)
 	{
 		philosopher->status = DEAD;
-		write_status(timestamp, philosopher->id, DIE);
+		write_status(timestamp, philosopher, DIE);
 		exit(1);
 	}
 	take_forks(philosopher);
@@ -30,7 +30,7 @@ void	ft_eat(t_philosopher *philosopher)
 	if (philosopher->nb_forks == 2)
 	{
 		gettimeofday(&philosopher->last_eat, NULL);
-		write_status(timestamp, philosopher->id, EAT);
+		write_status(timestamp, philosopher, EAT);
 		philosopher->status = EATING;
 		philosopher->eat_times++;
 		usleep(philosopher->param.time_to_eat * 1000);
@@ -49,17 +49,17 @@ void	ft_sleep(t_philosopher *philosopher)
 	if (time_since_eat > philosopher->param.time_to_die)
 	{
 		philosopher->status = DEAD;
-		write_status(timestamp, philosopher->id, DIE);
+		write_status(timestamp, philosopher, DIE);
 		exit(1);
 	}
-	write_status(timestamp, philosopher->id, SLEEP);
+	write_status(timestamp, philosopher, SLEEP);
 	philosopher->status = SLEEPING;
 	future_time = time_since_eat + philosopher->param.time_to_sleep;
 	if (future_time > philosopher->param.time_to_die)
 	{
 		usleep(1000 * (philosopher->param.time_to_die - timestamp));
 		timestamp = get_timediff(philosopher->param.start_time);
-		write_status(timestamp, philosopher->id, DIE);
+		write_status(timestamp, philosopher, DIE);
 		philosopher->status = DEAD;
 		exit(1);
 	}
@@ -76,9 +76,9 @@ void	ft_think(t_philosopher *philosopher)
 	if (time_since_eat > philosopher->param.time_to_die)
 	{
 		philosopher->status = DEAD;
-		write_status(timestamp, philosopher->id, DIE);
+		write_status(timestamp, philosopher, DIE);
 		exit(1);
 	}
-	write_status(timestamp, philosopher->id, THINK);
+	write_status(timestamp, philosopher, THINK);
 	philosopher->status = THINKING;
 }

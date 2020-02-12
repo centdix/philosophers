@@ -69,9 +69,8 @@ int		start(t_param param)
 		wait_die(philosophers, param.nb_philosophers);
 	else
 		wait_eat(philosophers, param.nb_philosophers);
-	sem_post(param.sem);
-	sem_close(param.sem);
 	sem_unlink("forks");
+	sem_unlink("write");
 	free(philosophers);
 	return (0);
 }
@@ -99,5 +98,7 @@ int		main(int ac, char **av)
 	gettimeofday(&param.start_time, NULL);
 	sem_unlink("forks");
 	param.sem = sem_open("forks", O_CREAT, 0666, param.nb_philosophers / 2);
+	sem_unlink("write");
+	param.write_sem = sem_open("write", O_CREAT, 0666, 1);
 	return (start(param));
 }
