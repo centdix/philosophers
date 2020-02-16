@@ -69,7 +69,8 @@ char			*ft_itoa(int n);
 int				init_philosophers(t_philosopher **philosophers, t_param param);
 
 int				write_err(char *str);
-void			write_status(long timestamp, t_philosopher *philosopher, int action);
+void			write_status(long timestamp, t_philosopher *philosopher,
+				int action);
 
 void			take_forks(t_philosopher *philosopher);
 void			drop_forks(t_philosopher *philosopher);
