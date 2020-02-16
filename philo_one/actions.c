@@ -1,60 +1,63 @@
 #include "header.h"
 
-int		take_forks(t_philo *philo)
+int		take_forks(t_philo *philo, t_philo *next)
 {
-	int		index;
-	int		left;
-	int		right;
+	int ret;
 
-	index = philo->id - 1;
-	left = index;
-	right = (index + 1) % philo->shared->nb_philosophers;
-	pthread_mutex_lock(&g_mutex[ft_min(left, right)]);
-	if (g_forks[ft_min(left, right)] == 1)
-		g_forks[ft_min(left, right)] = 0;
-	pthread_mutex_lock(&g_mutex[ft_max(left, right)]);
-	if (g_forks[ft_max(left, right)] == 1)
-		g_forks[ft_max(left, right)] = 0;
-	return (0);
+	ret = 0;
+	pthread_mutex_lock(&philo->fork.mutex);
+	pthread_mutex_lock(&next->fork.mutex);
+	if ((philo->fork.owner != philo->id && !philo->fork.used)
+		&& (next->fork.owner != philo->id && !next->fork.used))
+	{
+		philo->fork.owner = philo->id;
+		next->fork.owner = philo->id;
+		philo->fork.used = 1;
+		next->fork.used = 1;
+		ret = 1;
+	}
+	pthread_mutex_unlock(&philo->fork.mutex);
+	pthread_mutex_unlock(&next->fork.mutex);
+	return (ret);
 }
 
-int		drop_forks(t_philo *philo)
+void	drop_forks(t_philo *philo, t_philo *next)
 {
-	int		index;
-	int		left;
-	int		right;
-
-	index = philo->id - 1;
-	left = index;
-	right = (index + 1) % philo->shared->nb_philosophers;
-	g_forks[left] = 1;
-	pthread_mutex_unlock(&g_mutex[left]);
-	g_forks[right] = 1;
-	pthread_mutex_unlock(&g_mutex[right]);
-	return (0);
+	pthread_mutex_lock(&philo->fork.mutex);
+	pthread_mutex_lock(&next->fork.mutex);
+	philo->fork.used = 0;
+	next->fork.used = 0;
+	pthread_mutex_unlock(&philo->fork.mutex);
+	pthread_mutex_unlock(&next->fork.mutex);
 }
 
-void	ft_eat(t_philo *philo)
+void	ft_eat(t_philo *philo, t_philo *next)
 {
 	int 	time;
+	int		i;
 
-	take_forks(philo);
-	time = get_runtime();
-	write_status(time, philo->id, EAT);
-	philo->last_eat = time;
-	philo->eat_times += 1;
-	philo->status = eating;
+	i = 0;
+	while (!take_forks(philo, next) && philo->shared->glb_status == running)
+		usleep(1);
+	if (philo->status != dead)
+	{
+		time = get_runtime();
+		write_status(time, philo, EAT);
+		philo->last_eat = time;
+		philo->eat_times += 1;
+		philo->status = eating;
+	}
 }
 
-void	ft_sleep(t_philo *philo)
+void	ft_sleep(t_philo *philo, t_philo *next)
 {
-	drop_forks(philo);
-	write_status(get_runtime(), philo->id, SLEEP);
+	drop_forks(philo, next);
+	write_status(get_runtime(), philo, SLEEP);
 	philo->status = sleeping;
 }
 
 void	ft_think(t_philo *philo)
 {
-	write_status(get_runtime(), philo->id, THINK);
+	write_status(get_runtime(), philo, THINK);
 	philo->status = thinking;
 }

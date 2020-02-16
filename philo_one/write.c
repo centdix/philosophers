@@ -26,12 +26,12 @@ void	ft_putstr(char *str)
 		write(1, str++, 1);
 }
 
-void	write_status(int timestamp, int id, int action)
+void	write_status(int timestamp, t_philo *philo, int action)
 {
-	pthread_mutex_lock(&g_write_mutex);
+	pthread_mutex_lock(&philo->shared->write_mutex);
 	ft_putnbr(timestamp);
 	ft_putstr(" ");
-	ft_putnbr(id);
+	ft_putnbr(philo->id);
 	ft_putstr(" ");
 	if (action == EAT)
 		ft_putstr("is eating\n");
@@ -41,7 +41,7 @@ void	write_status(int timestamp, int id, int action)
 		ft_putstr("is thinking\n");
 	else if (action == DEAD)
 		ft_putstr("is dead\n");
-	pthread_mutex_unlock(&g_write_mutex);
+	pthread_mutex_unlock(&philo->shared->write_mutex);
 }
 
 int		write_err(char *str)

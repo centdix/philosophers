@@ -25,10 +25,6 @@
 # define THINK 30
 # define DEAD 40
 
-int					g_forks[MAX_PHILO];
-pthread_mutex_t		*g_mutex;
-pthread_mutex_t		g_write_mutex;
-
 typedef enum  	e_state
 {
 	running,
@@ -39,11 +35,19 @@ typedef enum  	e_state
 	end
 }				t_state;
 
+typedef struct		s_fork
+{
+	int				owner;
+	int				used;
+	pthread_mutex_t	mutex;
+}					t_fork;
+
 typedef struct	s_philo
 {
 	int				id;
 	pthread_t		thread;
 	t_state			status;
+	t_fork			fork;
 	int				eat_times;
 	int				last_eat;
 	struct s_shared	*shared;
@@ -56,24 +60,21 @@ typedef struct	s_shared
 	int				time_to_die;
 	int				time_to_sleep;
 	int				eat_times;
+	pthread_mutex_t	write_mutex;
 	t_state			glb_status;
 	t_philo			philo_lst[MAX_PHILO];
 }				t_shared;
 
 int				ft_atoi(char *str);
-int				ft_min(int a, int b);
-int				ft_max(int a, int b);
 
 int				init_shared(t_shared *shared, int ac, char **av);
 int				init_philo(t_shared *shared);
-void			init_forks(int count);
-int				init_mutex(int count);
 
 int				write_err(char *str);
-void			write_status(int timestamp, int id, int action);
+void			write_status(int timestamp, t_philo *philo, int action);
 
-void			ft_eat(t_philo *philo);
-void			ft_sleep(t_philo *philo);
+void			ft_eat(t_philo *philo, t_philo *next);
+void			ft_sleep(t_philo *philo, t_philo *next);
 void			ft_think(t_philo *philo);
 
 int				check_dead(t_shared *shared);

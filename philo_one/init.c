@@ -19,7 +19,15 @@ int		init_shared(t_shared *shared, int ac, char **av)
 			return (1);
 	}
 	shared->glb_status = running;
+	pthread_mutex_init(&shared->write_mutex, NULL);
 	return (0);
+}
+
+void	init_fork(t_fork *fork)
+{
+	fork->owner = -1;
+	fork->used = 0;
+	pthread_mutex_init(&fork->mutex, NULL);
 }
 
 int		init_philo(t_shared *shared)
@@ -33,38 +41,10 @@ int		init_philo(t_shared *shared)
 		shared->philo_lst[i].status = running;
 		shared->philo_lst[i].eat_times = 0;
 		shared->philo_lst[i].last_eat = 0;
+		init_fork(&shared->philo_lst[i].fork);
 		shared->philo_lst[i].shared = shared;
 		pthread_create(&shared->philo_lst[i].thread, NULL, routine,
 			&shared->philo_lst[i]);
-		i++;
-	}
-	return (0);
-}
-
-void	init_forks(int count)
-{
-	int i;
-
-	i = 0;
-	while (i < count)
-	{
-		g_forks[i] = 1;
-		i++;
-	}
-	g_forks[i] = -1;
-}
-
-int		init_mutex(int count)
-{
-	int i;
-
-	pthread_mutex_init(&g_write_mutex, NULL);
-	if (!(g_mutex = malloc(sizeof(pthread_mutex_t) * count)))
-		return (1);
-	i = 0;
-	while (i < count)
-	{
-		pthread_mutex_init(&g_mutex[i], NULL);
 		i++;
 	}
 	return (0);
