@@ -6,7 +6,7 @@
 /*   By: fgoulama <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/02/11 21:39:51 by fgoulama          #+#    #+#             */
-/*   Updated: 2020/02/11 21:39:53 by fgoulama         ###   ########.fr       */
+/*   Updated: 2020/02/14 22:27:45 by fgoulama         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,69 +19,68 @@
 # include <stdio.h>
 # include <unistd.h>
 
-# define TAKE 0
-# define DROP 1
-# define EAT 2
-# define SLEEP 3
-# define THINK 4
-# define DIE 5
-# define EATING 6
-# define SLEEPING 7
-# define THINKING 8
-# define DEAD 9
+# define MAX_PHILO 200
+# define EAT 10
+# define SLEEP 20
+# define THINK 30
+# define DEAD 40
 
-int					*g_forks;
+int					g_forks[MAX_PHILO];
 pthread_mutex_t		*g_mutex;
 pthread_mutex_t		g_write_mutex;
 
-typedef struct	s_param
+typedef enum  	e_state
+{
+	running,
+	eating,
+	sleeping,
+	thinking,
+	dead,
+	end
+}				t_state;
+
+typedef struct	s_philo
+{
+	int				id;
+	pthread_t		thread;
+	t_state			status;
+	int				eat_times;
+	int				last_eat;
+	struct s_shared	*shared;
+}				t_philo;
+
+typedef struct	s_shared
 {
 	int				nb_philosophers;
 	int				time_to_eat;
 	int				time_to_die;
 	int				time_to_sleep;
 	int				eat_times;
-	struct timeval	start_time;
-}				t_param;
-
-typedef struct	s_philosopher
-{
-	int				id;
-	pthread_t		thread;
-	t_param			param;
-	int				status;
-	int				has_left;
-	int				has_right;
-	int				eat_times;
-	struct timeval	last_eat;
-}				t_philosopher;
+	t_state			glb_status;
+	t_philo			philo_lst[MAX_PHILO];
+}				t_shared;
 
 int				ft_atoi(char *str);
 int				ft_min(int a, int b);
 int				ft_max(int a, int b);
-long			get_timediff(struct timeval start);
 
-int				ft_strlen(char *str);
-char			*ft_strdup(char *str);
-char			*ft_strjoin(char *str1, char *str2);
-char			*ft_itoa(int n);
-
-int				init_philosophers(t_philosopher **philosophers, t_param param);
-int				init_mutex(pthread_mutex_t **g_mutex, int count);
-int				init_forks(int **g_forks, int count);
+int				init_shared(t_shared *shared, int ac, char **av);
+int				init_philo(t_shared *shared);
+void			init_forks(int count);
+int				init_mutex(int count);
 
 int				write_err(char *str);
-void			write_status(long timestamp, t_philosopher *philosopher,
-				int action);
+void			write_status(int timestamp, int id, int action);
 
-void			take_forks(t_philosopher *philosopher);
-void			drop_forks(t_philosopher *philosopher);
+void			ft_eat(t_philo *philo);
+void			ft_sleep(t_philo *philo);
+void			ft_think(t_philo *philo);
 
-void			ft_eat(t_philosopher *philosopher);
-void			ft_sleep(t_philosopher *philosopher);
-void			ft_think(t_philosopher *philosopher);
+int				check_dead(t_shared *shared);
+int				check_eat(t_shared *shared);
 
-void			wait_eat(t_philosopher *philosophers, int count);
-void			wait_die(t_philosopher *philosophers, int count);
+int				get_runtime();
+
+void			*routine(void *arg);
 
 #endif

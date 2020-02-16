@@ -1,13 +1,11 @@
 DIR_O = objs
 
-SRCS = init.c \
-		actions.c \
+SRCS = actions.c \
 		utils.c \
-		utils2.c \
-		start_utils.c \
-		forks_utils.c \
-		write_utils.c
-
+		write.c \
+		check.c \
+		time.c \
+		init.c
 
 OBJS = $(addprefix $(DIR_O)/,$(SRCS:.c=.o))
 
@@ -15,7 +13,7 @@ NAME = philo_one
 
 CC = gcc
 
-CFLAGS = -Wall -Werror -Wextra
+CFLAGS = -Wall -Wextra -Werror
 
 all: $(NAME)
 

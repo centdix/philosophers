@@ -1,84 +1,60 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   actions.c                                          :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: fgoulama <marvin@42.fr>                    +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2020/02/11 21:11:11 by fgoulama          #+#    #+#             */
-/*   Updated: 2020/02/11 21:12:48 by fgoulama         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
 #include "header.h"
 
-void	ft_eat(t_philosopher *philosopher)
+int		take_forks(t_philo *philo)
 {
-	long	timestamp;
-	long	time_since_eat;
+	int		index;
+	int		left;
+	int		right;
 
-	time_since_eat = get_timediff(philosopher->last_eat);
-	timestamp = get_timediff(philosopher->param.start_time);
-	if (time_since_eat > philosopher->param.time_to_die)
-	{
-		philosopher->status = DEAD;
-		write_status(timestamp, philosopher, DIE);
-		return ;
-	}
-	take_forks(philosopher);
-	timestamp = get_timediff(philosopher->param.start_time);
-	if (philosopher->has_left && philosopher->has_right)
-	{
-		gettimeofday(&philosopher->last_eat, NULL);
-		write_status(timestamp, philosopher, EAT);
-		philosopher->status = EATING;
-		philosopher->eat_times++;
-		usleep(philosopher->param.time_to_eat * 1000);
-		drop_forks(philosopher);
-	}
+	index = philo->id - 1;
+	left = index;
+	right = (index + 1) % philo->shared->nb_philosophers;
+	pthread_mutex_lock(&g_mutex[ft_min(left, right)]);
+	if (g_forks[ft_min(left, right)] == 1)
+		g_forks[ft_min(left, right)] = 0;
+	pthread_mutex_lock(&g_mutex[ft_max(left, right)]);
+	if (g_forks[ft_max(left, right)] == 1)
+		g_forks[ft_max(left, right)] = 0;
+	return (0);
 }
 
-void	ft_sleep(t_philosopher *philosopher)
+int		drop_forks(t_philo *philo)
 {
-	long	timestamp;
-	long	time_since_eat;
-	long	future_time;
+	int		index;
+	int		left;
+	int		right;
 
-	time_since_eat = get_timediff(philosopher->last_eat);
-	timestamp = get_timediff(philosopher->param.start_time);
-	if (time_since_eat > philosopher->param.time_to_die)
-	{
-		philosopher->status = DEAD;
-		write_status(timestamp, philosopher, DIE);
-		return ;
-	}
-	write_status(timestamp, philosopher, SLEEP);
-	philosopher->status = SLEEPING;
-	future_time = time_since_eat + philosopher->param.time_to_sleep;
-	if (future_time > philosopher->param.time_to_die)
-	{
-		usleep(1000 * (philosopher->param.time_to_die - timestamp));
-		timestamp = get_timediff(philosopher->param.start_time);
-		write_status(timestamp, philosopher, DIE);
-		philosopher->status = DEAD;
-		return ;
-	}
-	usleep(philosopher->param.time_to_sleep * 1000);
+	index = philo->id - 1;
+	left = index;
+	right = (index + 1) % philo->shared->nb_philosophers;
+	g_forks[left] = 1;
+	pthread_mutex_unlock(&g_mutex[left]);
+	g_forks[right] = 1;
+	pthread_mutex_unlock(&g_mutex[right]);
+	return (0);
 }
 
-void	ft_think(t_philosopher *philosopher)
+void	ft_eat(t_philo *philo)
 {
-	long	timestamp;
-	long	time_since_eat;
+	int 	time;
 
-	time_since_eat = get_timediff(philosopher->last_eat);
-	timestamp = get_timediff(philosopher->param.start_time);
-	if (time_since_eat > philosopher->param.time_to_die)
-	{
-		philosopher->status = DEAD;
-		write_status(timestamp, philosopher, DIE);
-		return ;
-	}
-	write_status(timestamp, philosopher, THINK);
-	philosopher->status = THINKING;
+	take_forks(philo);
+	time = get_runtime();
+	write_status(time, philo->id, EAT);
+	philo->last_eat = time;
+	philo->eat_times += 1;
+	philo->status = eating;
+}
+
+void	ft_sleep(t_philo *philo)
+{
+	drop_forks(philo);
+	write_status(get_runtime(), philo->id, SLEEP);
+	philo->status = sleeping;
+}
+
+void	ft_think(t_philo *philo)
+{
+	write_status(get_runtime(), philo->id, THINK);
+	philo->status = thinking;
 }
