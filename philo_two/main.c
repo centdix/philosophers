@@ -1,101 +1,41 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   main.c                                             :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: fgoulama <marvin@42.fr>                    +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2020/02/11 21:50:43 by fgoulama          #+#    #+#             */
-/*   Updated: 2020/02/11 21:50:57 by fgoulama         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
 #include "header.h"
-
-void	routine_with_option(t_philosopher *philosopher)
-{
-	while (philosopher->eat_times < philosopher->param.eat_times
-			&& philosopher->status != DEAD)
-	{
-		while (philosopher->status != DEAD && philosopher->status != EATING)
-			ft_eat(philosopher);
-		if (philosopher->status != DEAD)
-			ft_sleep(philosopher);
-		if (philosopher->status != DEAD)
-			ft_think(philosopher);
-	}
-	return ;
-}
 
 void	*routine(void *arg)
 {
-	t_philosopher *philosopher;
+	t_philo	*philo;
 
-	philosopher = (t_philosopher *)arg;
-	if (philosopher->param.eat_times == -1)
+	philo = (t_philo *)arg;
+	while (philo->shared->glb_status == running)
 	{
-		while (philosopher->status != DEAD)
+		ft_eat(philo);
+		if (philo->status == eating && philo->shared->glb_status == running)
+			usleep(philo->shared->time_to_eat * 1000);
+		if (philo->status == eating && philo->shared->glb_status == running)
 		{
-			while (philosopher->status != DEAD && philosopher->status != EATING)
-				ft_eat(philosopher);
-			if (philosopher->status != DEAD)
-				ft_sleep(philosopher);
-			if (philosopher->status != DEAD)
-				ft_think(philosopher);
+			ft_sleep(philo);
+			usleep(philo->shared->time_to_sleep * 1000);
 		}
+		if (philo->status == sleeping && philo->shared->glb_status == running)
+			ft_think(philo);
 	}
-	else
-		routine_with_option(philosopher);
 	return (NULL);
-}
-
-int		start(t_param param)
-{
-	t_philosopher	*philosophers;
-	int				i;
-
-	init_philosophers(&philosophers, param);
-	g_nb_forks = param.nb_philosophers;
-	sem_unlink("write");
-	g_write_sem = sem_open("write", O_CREAT, 0666, 1);
-	i = 0;
-	while (i < param.nb_philosophers)
-	{
-		pthread_create(&philosophers[i].thread, NULL, routine,
-			&philosophers[i]);
-		i++;
-	}
-	if (param.eat_times == -1)
-		wait_die(philosophers, param.nb_philosophers);
-	else
-		wait_eat(philosophers, param.nb_philosophers);
-	sem_unlink("forks");
-	sem_unlink("write");
-	return (0);
 }
 
 int		main(int ac, char **av)
 {
-	t_param		param;
+	t_shared	shared;
+	int			i;
 
-	if (ac < 5 || ac > 6)
+	if (init_shared(&shared, ac, av))
 		return (write_err("error: argument\n"));
-	param.nb_philosophers = ft_atoi(av[1]);
-	if (param.nb_philosophers <= 1)
-		return (write_err("error: argument\n"));
-	param.time_to_die = ft_atoi(av[2]);
-	param.time_to_eat = ft_atoi(av[3]);
-	param.time_to_sleep = ft_atoi(av[4]);
-	if (ac == 5)
-		param.eat_times = -1;
-	else
-	{
-		param.eat_times = ft_atoi(av[5]);
-		if (param.eat_times <= 0)
-			return (write_err("error: argument\n"));
-	}
-	gettimeofday(&param.start_time, NULL);
+	get_runtime();
+	init_philo(&shared);
+	while (!check_dead(&shared) && !check_eat(&shared))
+		usleep(1);
+	i = -1;
+	while (++i < shared.nb_philosophers)
+		pthread_join(shared.philo_lst[i].thread, NULL);
+	sem_unlink("write");
 	sem_unlink("forks");
-	param.sem = sem_open("forks", O_CREAT, 0666, param.nb_philosophers / 2);
-	return (start(param));
+	return (0);
 }

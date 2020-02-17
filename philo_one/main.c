@@ -6,7 +6,7 @@ void	*routine(void *arg)
 	t_philo *next;
 
 	philo = (t_philo *)arg;
-	next = philo->shared->philo_lst + (philo->id + 1) % philo->shared->nb_philosophers;
+	next = philo->shared->philo_lst + philo->id % philo->shared->nb_philosophers;
 	while (philo->shared->glb_status == running)
 	{
 		ft_eat(philo, next);

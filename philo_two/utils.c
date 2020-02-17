@@ -1,15 +1,3 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   utils.c                                            :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: fgoulama <marvin@42.fr>                    +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2020/02/11 21:51:38 by fgoulama          #+#    #+#             */
-/*   Updated: 2020/02/11 21:51:47 by fgoulama         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
 #include "header.h"
 
 int				ft_isdigit(char c)
@@ -40,35 +28,4 @@ int				ft_atoi(char *str)
 		str++;
 	}
 	return (nb * signe);
-}
-
-int				ft_min(int a, int b)
-{
-	if (a <= b)
-		return (a);
-	else
-		return (b);
-}
-
-int				ft_max(int a, int b)
-{
-	if (a >= b)
-		return (a);
-	else
-		return (b);
-}
-
-long			get_timediff(struct timeval start)
-{
-	struct timeval	cur_time;
-	long			result;
-	int				micro;
-
-	gettimeofday(&cur_time, NULL);
-	result = cur_time.tv_sec - start.tv_sec;
-	result *= 1000;
-	micro = cur_time.tv_usec - start.tv_usec;
-	micro /= 1000;
-	result += micro;
-	return (result);
 }
