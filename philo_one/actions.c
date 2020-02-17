@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   actions.c                                          :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: fgoulama <marvin@42.fr>                    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2020/02/17 21:58:32 by fgoulama          #+#    #+#             */
+/*   Updated: 2020/02/17 21:59:35 by fgoulama         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "header.h"
 
 int		take_forks(t_philo *philo, t_philo *next)
@@ -33,7 +45,7 @@ void	drop_forks(t_philo *philo, t_philo *next)
 
 void	ft_eat(t_philo *philo, t_philo *next)
 {
-	int 	time;
+	int		time;
 	int		i;
 
 	i = 0;

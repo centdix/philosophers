@@ -1,8 +1,20 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   actions.c                                          :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: fgoulama <marvin@42.fr>                    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2020/02/17 22:03:20 by fgoulama          #+#    #+#             */
+/*   Updated: 2020/02/17 22:04:03 by fgoulama         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "header.h"
 
 void	ft_eat(t_philo *philo)
 {
-	int 	time;
+	int		time;
 
 	sem_wait(philo->shared->forks_sem);
 	if (philo->shared->glb_status == running)

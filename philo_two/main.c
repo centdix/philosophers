@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   main.c                                             :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: fgoulama <marvin@42.fr>                    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2020/02/17 22:03:36 by fgoulama          #+#    #+#             */
+/*   Updated: 2020/02/17 22:03:38 by fgoulama         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "header.h"
 
 void	*routine(void *arg)
@@ -33,7 +45,7 @@ int		main(int ac, char **av)
 	while (!check_dead(&shared) && !check_eat(&shared))
 		usleep(1);
 	i = -1;
-	while (++i < shared.nb_philosophers)
+	while (++i < shared.nb_philo)
 		pthread_join(shared.philo_lst[i].thread, NULL);
 	sem_unlink("write");
 	sem_unlink("forks");

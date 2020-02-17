@@ -1,11 +1,23 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   init.c                                             :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: fgoulama <marvin@42.fr>                    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2020/02/17 21:58:50 by fgoulama          #+#    #+#             */
+/*   Updated: 2020/02/17 22:00:48 by fgoulama         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "header.h"
 
 int		init_shared(t_shared *shared, int ac, char **av)
 {
 	if (ac < 5 || ac > 6)
 		return (1);
-	shared->nb_philosophers = ft_atoi(av[1]);
-	if (shared->nb_philosophers <= 1)
+	shared->nb_philo = ft_atoi(av[1]);
+	if (shared->nb_philo <= 1)
 		return (1);
 	shared->time_to_die = ft_atoi(av[2]);
 	shared->time_to_eat = ft_atoi(av[3]);
@@ -32,10 +44,10 @@ void	init_fork(t_fork *fork)
 
 int		init_philo(t_shared *shared)
 {
-	int 	i;
+	int		i;
 
 	i = 0;
-	while (i < shared->nb_philosophers)
+	while (i < shared->nb_philo)
 	{
 		shared->philo_lst[i].id = i + 1;
 		shared->philo_lst[i].status = running;

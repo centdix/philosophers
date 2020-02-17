@@ -6,7 +6,7 @@
 /*   By: fgoulama <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/02/11 21:39:51 by fgoulama          #+#    #+#             */
-/*   Updated: 2020/02/14 22:27:45 by fgoulama         ###   ########.fr       */
+/*   Updated: 2020/02/17 22:00:12 by fgoulama         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,7 @@
 # define THINK 30
 # define DEAD 40
 
-typedef enum  	e_state
+typedef enum	e_state
 {
 	running,
 	eating,
@@ -35,12 +35,12 @@ typedef enum  	e_state
 	end
 }				t_state;
 
-typedef struct		s_fork
+typedef struct	s_fork
 {
 	int				owner;
 	int				used;
 	pthread_mutex_t	mutex;
-}					t_fork;
+}				t_fork;
 
 typedef struct	s_philo
 {
@@ -55,7 +55,7 @@ typedef struct	s_philo
 
 typedef struct	s_shared
 {
-	int				nb_philosophers;
+	int				nb_philo;
 	int				time_to_eat;
 	int				time_to_die;
 	int				time_to_sleep;
