@@ -23,6 +23,7 @@ int		check_dead(t_shared *shared)
 	while (i < shared->nb_philo)
 	{
 		current = &shared->philo_lst[i];
+		pthread_mutex_lock(&current->action_mutex);
 		next = shared->philo_lst + current->id % shared->nb_philo;
 		time = get_runtime();
 		if (time - current->last_eat > shared->time_to_die)
@@ -32,8 +33,11 @@ int		check_dead(t_shared *shared)
 			pthread_mutex_unlock(&next->fork.mutex);
 			current->status = dead;
 			shared->glb_status = end;
+			pthread_mutex_unlock(&current->action_mutex);
 			return (1);
 		}
+		else
+			pthread_mutex_unlock(&current->action_mutex);
 		i++;
 	}
 	return (0);

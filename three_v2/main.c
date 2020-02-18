@@ -17,6 +17,8 @@ void	*routine(void *arg)
 	t_philo	*philo;
 
 	philo = (t_philo *)arg;
+	pthread_create(&philo->eat_thread, NULL, test_eat, philo);
+	pthread_create(&philo->dead_thread, NULL, test_dead, philo);
 	while (philo->shared->glb_status == running)
 	{
 		ft_eat(philo);
@@ -30,25 +32,23 @@ void	*routine(void *arg)
 		if (philo->status == sleeping && philo->shared->glb_status == running)
 			ft_think(philo);
 	}
+	pthread_join(philo->eat_thread, NULL);
+	pthread_join(philo->dead_thread, NULL);
 	return (NULL);
 }
 
 int		main(int ac, char **av)
 {
 	t_shared	shared;
-	int			i;
 
 	if (init_shared(&shared, ac, av))
 		return (write_err("error: argument\n"));
 	get_runtime();
 	init_philo(&shared);
-	while (!check_dead(&shared) && !check_eat(&shared))
-		usleep(1);
-	i = -1;
-	while (++i < shared.nb_philo)
-		pthread_join(shared.philo_lst[i].thread, NULL);
+	check_status(&shared);
 	sem_unlink("write");
 	sem_unlink("forks");
 	sem_unlink("action");
+	sem_unlink("done_philo");
 	return (0);
 }

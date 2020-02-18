@@ -39,7 +39,8 @@ typedef enum	e_state
 typedef struct	s_philo
 {
 	int				id;
-	pthread_t		thread;
+	pthread_t		eat_thread;
+	pthread_t		dead_thread;
 	t_state			status;
 	int				eat_times;
 	int				last_eat;
@@ -56,8 +57,8 @@ typedef struct	s_shared
 	int				eat_times;
 	sem_t			*write_sem;
 	sem_t			*forks_sem;
+	sem_t			*done_philo;
 	t_state			glb_status;
-	t_philo			philo_lst[MAX_PHILO];
 }				t_shared;
 
 int				ft_atoi(char *str);
@@ -72,8 +73,9 @@ void			ft_eat(t_philo *philo);
 void			ft_sleep(t_philo *philo);
 void			ft_think(t_philo *philo);
 
-int				check_dead(t_shared *shared);
-int				check_eat(t_shared *shared);
+int				check_status(t_shared *shared);
+void			*test_eat(void *arg);
+void			*test_dead(void *arg);
 
 int				get_runtime();
 

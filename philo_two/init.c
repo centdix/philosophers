@@ -17,7 +17,7 @@ int		init_shared(t_shared *shared, int ac, char **av)
 	if (ac < 5 || ac > 6)
 		return (1);
 	shared->nb_philo = ft_atoi(av[1]);
-	if (shared->nb_philo <= 1)
+	if (shared->nb_philo <= 1 || shared->nb_philo > MAX_PHILO)
 		return (1);
 	shared->time_to_die = ft_atoi(av[2]);
 	shared->time_to_eat = ft_atoi(av[3]);
@@ -50,6 +50,8 @@ int		init_philo(t_shared *shared)
 		shared->philo_lst[i].eat_times = 0;
 		shared->philo_lst[i].last_eat = 0;
 		shared->philo_lst[i].shared = shared;
+		sem_unlink("action");
+		shared->philo_lst[i].action_sem = sem_open("action", O_CREAT, 0666, 1);
 		pthread_create(&shared->philo_lst[i].thread, NULL, routine,
 			&shared->philo_lst[i]);
 		i++;

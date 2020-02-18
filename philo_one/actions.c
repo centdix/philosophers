@@ -51,7 +51,8 @@ void	ft_eat(t_philo *philo, t_philo *next)
 	i = 0;
 	while (!take_forks(philo, next) && philo->shared->glb_status == running)
 		usleep(1);
-	if (philo->status != dead)
+	pthread_mutex_lock(&philo->action_mutex);
+	if (philo->shared->glb_status == running)
 	{
 		time = get_runtime();
 		write_status(time, philo, EAT);
@@ -59,6 +60,7 @@ void	ft_eat(t_philo *philo, t_philo *next)
 		philo->eat_times += 1;
 		philo->status = eating;
 	}
+	pthread_mutex_unlock(&philo->action_mutex);
 }
 
 void	ft_sleep(t_philo *philo, t_philo *next)

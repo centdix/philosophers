@@ -14,7 +14,18 @@
 
 void	take_forks(t_philosopher *philosopher)
 {
+	long			timestamp;
+	long			time_since_eat;
+
 	sem_wait(philosopher->param.sem);
+	time_since_eat = get_timediff(philosopher->last_eat);
+	timestamp = get_timediff(philosopher->param.start_time);
+	if (time_since_eat > philosopher->param.time_to_die)
+	{
+		philosopher->status = DEAD;
+		write_status(timestamp, philosopher, DIE);
+		exit(1);
+	}
 	if (g_nb_forks >= 2)
 	{
 		g_nb_forks -= 2;

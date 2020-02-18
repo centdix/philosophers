@@ -5,8 +5,8 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: fgoulama <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2020/02/17 21:58:50 by fgoulama          #+#    #+#             */
-/*   Updated: 2020/02/17 22:00:48 by fgoulama         ###   ########.fr       */
+/*   Created: 2020/02/17 22:03:33 by fgoulama          #+#    #+#             */
+/*   Updated: 2020/02/17 22:04:57 by fgoulama         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,33 +31,35 @@ int		init_shared(t_shared *shared, int ac, char **av)
 			return (1);
 	}
 	shared->glb_status = running;
-	pthread_mutex_init(&shared->write_mutex, NULL);
+	sem_unlink("write");
+	sem_unlink("forks");
+	sem_unlink("done_philo");
+	shared->write_sem = sem_open("write", O_CREAT, 0666, 1);
+	shared->forks_sem = sem_open("forks", O_CREAT, 0666, shared->nb_philo / 2);
+	shared->done_philo = sem_open("done_philo", O_CREAT, 0666, shared->nb_philo);
 	return (0);
-}
-
-void	init_fork(t_fork *fork)
-{
-	fork->owner = -1;
-	fork->used = 0;
-	pthread_mutex_init(&fork->mutex, NULL);
 }
 
 int		init_philo(t_shared *shared)
 {
 	int		i;
+	t_philo	philo;
 
 	i = 0;
 	while (i < shared->nb_philo)
 	{
-		shared->philo_lst[i].id = i + 1;
-		shared->philo_lst[i].status = running;
-		shared->philo_lst[i].eat_times = 0;
-		shared->philo_lst[i].last_eat = 0;
-		init_fork(&shared->philo_lst[i].fork);
-		pthread_mutex_init(&shared->philo_lst[i].action_mutex, NULL);
-		shared->philo_lst[i].shared = shared;
-		pthread_create(&shared->philo_lst[i].thread, NULL, routine,
-			&shared->philo_lst[i]);
+		philo.id = i + 1;
+		philo.status = running;
+		philo.eat_times = 0;
+		philo.last_eat = 0;
+		philo.shared = shared;
+		sem_unlink("action");
+		philo.action_sem = sem_open("action", O_CREAT, 0666, 1);
+		if (!fork())
+		{
+			routine(&philo);
+			exit(0);
+		}
 		i++;
 	}
 	return (0);
