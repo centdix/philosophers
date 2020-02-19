@@ -5,8 +5,8 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: fgoulama <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2020/02/11 21:54:57 by fgoulama          #+#    #+#             */
-/*   Updated: 2020/02/11 21:55:00 by fgoulama         ###   ########.fr       */
+/*   Created: 2020/02/11 21:39:51 by fgoulama          #+#    #+#             */
+/*   Updated: 2020/02/17 22:04:26 by fgoulama         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,67 +19,70 @@
 # include <stdio.h>
 # include <unistd.h>
 # include <semaphore.h>
-# include <sys/errno.h>
-# include <signal.h>
+# include <errno.h>
 
-# define TAKE 0
-# define DROP 1
-# define EAT 2
-# define SLEEP 3
-# define THINK 4
-# define DIE 5
-# define EATING 6
-# define SLEEPING 7
-# define THINKING 8
-# define DEAD 9
+# define MAX_PHILO 200
+# define EAT 10
+# define SLEEP 20
+# define THINK 30
+# define DEAD 40
 
-int		g_nb_forks;
-
-typedef struct	s_param
+typedef enum	e_state
 {
-	int				nb_philosophers;
-	sem_t			*sem;
-	sem_t			*write_sem;
+	running,
+	eating,
+	sleeping,
+	thinking,
+	dead,
+	end
+}				t_state;
+
+typedef struct	s_philo
+{
+	int				id;
+	pthread_t		eat_thread;
+	pthread_t		dead_thread;
+	pthread_t		end_thread;
+	t_state			status;
+	int				eat_times;
+	int				last_eat;
+	sem_t			*action_sem;
+	struct s_shared	*shared;
+}				t_philo;
+
+typedef struct	s_shared
+{
+	int				nb_philo;
 	int				time_to_eat;
 	int				time_to_die;
 	int				time_to_sleep;
 	int				eat_times;
-	struct timeval	start_time;
-}				t_param;
-
-typedef struct	s_philosopher
-{
-	int				id;
-	pid_t			pid;
-	t_param			param;
-	int				status;
-	int				nb_forks;
-	int				eat_times;
-	struct timeval	last_eat;
-}				t_philosopher;
+	sem_t			*write_sem;
+	sem_t			*forks_sem;
+	sem_t			*done_philo;
+	sem_t			*end_sem;
+	t_state			glb_status;
+}				t_shared;
 
 int				ft_atoi(char *str);
-long			get_timediff(struct timeval start);
 
-int				ft_strlen(char *str);
-char			*ft_strdup(char *str);
-char			*ft_strjoin(char *str1, char *str2);
-char			*ft_itoa(int n);
-
-int				init_philosophers(t_philosopher **philosophers, t_param param);
+int				init_shared(t_shared *shared, int ac, char **av);
+int				init_philo(t_shared *shared);
 
 int				write_err(char *str);
-void			write_status(long timestamp, t_philosopher *philosopher,
-				int action);
+void			write_status(int timestamp, t_philo *philo, int action);
 
-void			take_forks(t_philosopher *philosopher);
-void			drop_forks(t_philosopher *philosopher);
+void			ft_eat(t_philo *philo);
+void			ft_sleep(t_philo *philo);
+void			ft_think(t_philo *philo);
 
-void			ft_eat(t_philosopher *philosopher);
-void			ft_sleep(t_philosopher *philosopher);
-void			ft_think(t_philosopher *philosopher);
+int				check_status(t_shared *shared);
+void			*test_eat(void *arg);
+void			*test_dead(void *arg);
+void			*test_end(void *arg);
 
-void			wait_eat(t_philosopher *philosophers, int count);
-void			wait_die(t_philosopher *philosophers, int count);
+int				get_runtime();
+
+void			*routine(void *arg);
 
 #endif

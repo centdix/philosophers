@@ -5,8 +5,8 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: fgoulama <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2020/02/11 21:55:58 by fgoulama          #+#    #+#             */
-/*   Updated: 2020/02/11 21:56:03 by fgoulama         ###   ########.fr       */
+/*   Created: 2020/02/17 22:03:45 by fgoulama          #+#    #+#             */
+/*   Updated: 2020/02/17 22:03:46 by fgoulama         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,35 +40,4 @@ int				ft_atoi(char *str)
 		str++;
 	}
 	return (nb * signe);
-}
-
-int				ft_min(int a, int b)
-{
-	if (a <= b)
-		return (a);
-	else
-		return (b);
-}
-
-int				ft_max(int a, int b)
-{
-	if (a >= b)
-		return (a);
-	else
-		return (b);
-}
-
-long			get_timediff(struct timeval start)
-{
-	struct timeval	cur_time;
-	long			result;
-	int				micro;
-
-	gettimeofday(&cur_time, NULL);
-	result = cur_time.tv_sec - start.tv_sec;
-	result *= 1000;
-	micro = cur_time.tv_usec - start.tv_usec;
-	micro /= 1000;
-	result += micro;
-	return (result);
 }

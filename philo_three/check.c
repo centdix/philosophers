@@ -31,12 +31,15 @@ void	*test_eat(void *arg)
 	t_philo	*philo;
 
 	philo = (t_philo *)arg;
+	if (philo->shared->eat_times == -1)
+		return (NULL);
 	while (philo->shared->glb_status == running)
 	{
 		if (philo->eat_times >= philo->shared->eat_times)
 		{
 			philo->shared->glb_status = end;
 			sem_post(philo->shared->done_philo);
+			sem_post(philo->shared->end_sem);
 			return (NULL);
 		}
 		usleep(5);
@@ -44,11 +47,22 @@ void	*test_eat(void *arg)
 	return (NULL);
 }
 
+void	multi_post(t_philo *philo)
+{
+	int i;
+
+	i = -1;
+	while (++i < philo->shared->nb_philo)
+	{
+		sem_post(philo->shared->end_sem);
+		sem_post(philo->shared->done_philo);
+	}
+}
+
 void	*test_dead(void *arg)
 {
 	t_philo	*philo;
 	int		time;
-	int		i;
 
 	philo = (t_philo *)arg;
 	while (philo->shared->glb_status == running)
@@ -61,14 +75,21 @@ void	*test_dead(void *arg)
 			philo->status = dead;
 			philo->shared->glb_status = end;
 			sem_post(philo->action_sem);
-			i = -1;
-			while (++i < philo->shared->nb_philo)
-				sem_post(philo->shared->done_philo);
+			multi_post(philo);
 			return (NULL);
 		}
 		else
-			sem_post(philo->action_sem);			
-		usleep(5);
+			sem_post(philo->action_sem);
 	}
+	return (NULL);
+}
+
+void	*test_end(void *arg)
+{
+	t_philo *philo;
+
+	philo = (t_philo *)arg;
+	sem_wait(philo->shared->end_sem);
+	philo->shared->glb_status = end;
 	return (NULL);
 }
